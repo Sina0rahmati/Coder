@@ -1,0 +1,31 @@
+body {
+  background: #0a0a0a;
+  color: #0f0;
+  font-family: monospace;
+}
+
+.auth, .messaging {
+  margin: 20px auto;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input, textarea, button {
+  padding: 10px;
+  background: #111;
+  border: 1px solid #0f0;
+  color: #0f0;
+}
+
+button:hover {
+  background: #0f0;
+  color: #000;
+}
+
+pre {
+  background: #000;
+  color: #0f0;
+  padding: 10px;
+}
