@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Coder - ابزار رمزنگاری شما</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: right;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border: 1px dashed #ccc;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #eee;
+            margin-left: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        .tab.active {
+            background: #4CAF50;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 ابزار رمزنگاری اختصاصی شما</h1>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('encode')">رمزگذاری (Encode)</div>
+            <div class="tab" onclick="switchTab('decode')">رمزگشایی (Decode)</div>
+        </div>
+        
+        <div id="encode" class="tab-content active">
+            <h2>متن اصلی را وارد کنید:</h2>
+            <textarea id="inputText" rows="5" placeholder="متن انگلیسی خود را اینجا وارد کنید..."></textarea>
+            <button onclick="encodeText()">رمزگذاری کن</button>
+            <div class="result">
+                <h3>نتیجه رمزگذاری:</h3>
+                <div id="encodedResult"></div>
+            </div>
+        </div>
+        
+        <div id="decode" class="tab-content">
+            <h2>کد رمزگذاری شده را وارد کنید:</h2>
+            <textarea id="encodedText" rows="5" placeholder="عدد رمزگذاری شده را اینجا وارد کنید..."></textarea>
+            <button onclick="decodeText()">رمزگشایی کن</button>
+            <div class="result">
+                <h3>نتیجه رمزگشایی:</h3>
+                <div id="decodedResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Deactivate all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Activate selected tab
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        function encodeText() {
+            const text = document.getElementById('inputText').value;
+            let numbers = [];
+            
+            // Step 1 & 2: Convert letters to numbers (A=1+8, B=2+8, ...)
+            for (let char of text.toUpperCase()) {
+                if (char >= 'A' && char <= 'Z') {
+                    numbers.push(char.charCodeAt(0) - 'A'.charCodeAt(0) + 1 + 8);
+                }
+            }
+            
+            // Step 3: Separate digits and insert 0 between them
+            let separated = [];
+            for (let num of numbers) {
+                let digits = String(num).split('');
+                separated.push(digits.join('0') + '0');
+            }
+            
+            // Step 4: Combine all numbers
+            let combined = separated.join('');
+            
+            // Step 5: Add 888 if it's a valid number
+            if (/^\d+$/.test(combined)) {
+                let finalNumber = BigInt(combined) + BigInt(888);
+                document.getElementById('encodedResult').textContent = finalNumber.toString();
+            } else {
+                document.getElementById('encodedResult').textContent = combined;
+            }
+        }
+        
+        function decodeText() {
+            const encoded = document.getElementById('encodedText').value;
+            
+            try {
+                // Step 5 Reverse: Subtract 888
+                let number = BigInt(encoded) - BigInt(888);
+                let numStr = number.toString();
+                
+                // Step 4 & 3 Reverse: Split by '0' to get original digits
+                let parts = numStr.split('0');
+                let originalNumbers = [];
+                let currentNum = [];
+                
+                for (let part of parts) {
+                    if (part) {
+                        currentNum.push(part);
+                    } else {
+                        if (currentNum.length > 0) {
+                            originalNumbers.push(parseInt(currentNum.join('')));
+                            currentNum = [];
+                        }
+                    }
+                }
+                if (currentNum.length > 0) {
+                    originalNumbers.push(parseInt(currentNum.join('')));
+                }
+                
+                // Step 2 & 1 Reverse: Convert back to letters
+                let letters = [];
+                for (let num of originalNumbers) {
+                    let originalNum = num - 8;
+                    if (originalNum >= 1 && originalNum <= 26) {
+                        letters.push(String.fromCharCode(originalNum + 'A'.charCodeAt(0) - 1));
+                    }
+                }
+                
+                document.getElementById('decodedResult').textContent = letters.join('');
+            } catch (e) {
+                document.getElementById('decodedResult').textContent = "خطا در رمزگشایی! لطفاً عدد معتبر وارد کنید.";
+            }
+        }
+    </script>
+</body>
+</html>
