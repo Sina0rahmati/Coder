@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>سیستم تبادل پیام نظامی</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="auth">
+    <input id="user" placeholder="نام کاربری">
+    <input id="pass" type="password" placeholder="رمز عبور">
+    <button onclick="register()">ثبت‌نام</button>
+    <button onclick="login()">ورود</button>
+  </div>
+
+  <div class="messaging">
+    <input id="receiver" placeholder="گیرنده">
+    <textarea id="message" placeholder="متن پیام"></textarea>
+    <button onclick="send()">ارسال پیام رمزنگاری‌شده</button>
+    <pre id="encoded"></pre>
+  </div>
+
+  <script src="encrypt.js"></script>
+</body>
+</html>
