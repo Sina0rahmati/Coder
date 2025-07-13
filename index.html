@@ -1,519 +1,191 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Cipher - ابزار رمزنگاری عصبی</title>
-    <style>
-        :root {
-            --primary-color: #0f0;
-            --bg-color: #111;
-            --panel-color: #222;
-            --text-color: #eee;
-            --border-color: #333;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-            transition: background-color 10s linear;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: var(--panel-color);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-        
-        h1 {
-            color: var(--primary-color);
-            text-align: center;
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-            font-size: 2.5rem;
-            margin-bottom: 30px;
-        }
-        
-        textarea {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 16px;
-            background-color: rgba(0, 0, 0, 0.3);
-            color: var(--text-color);
-            resize: vertical;
-            min-height: 100px;
-        }
-        
-        button {
-            background-color: rgba(0, 255, 0, 0.2);
-            color: var(--primary-color);
-            border: 1px solid var(--primary-color);
-            padding: 12px 25px;
-            font-size: 16px;
-            margin: 10px 5px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.3s;
-            font-weight: bold;
-            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
-        }
-        
-        button:hover {
-            background-color: rgba(0, 255, 0, 0.4);
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
-        }
-        
-        .result {
-            background-color: rgba(0, 0, 0, 0.3);
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-            border: 1px dashed var(--primary-color);
-            font-family: monospace;
-            font-size: 1.1rem;
-        }
-        
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .tab {
-            padding: 12px 25px;
-            cursor: pointer;
-            background: rgba(0, 0, 0, 0.3);
-            margin-left: 5px;
-            border-radius: 8px 8px 0 0;
-            border: 1px solid var(--border-color);
-            border-bottom: none;
-            transition: all 0.3s;
-        }
-        
-        .tab.active {
-            background: rgba(0, 255, 0, 0.2);
-            color: var(--primary-color);
-            border-color: var(--primary-color);
-            font-weight: bold;
-        }
-        
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.5s;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .language-panel {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            z-index: 100;
-        }
-        
-        .language-btn {
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            border: 1px solid #444;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s;
-        }
-        
-        .language-btn:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-        
-        .neuron {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background-color: var(--primary-color);
-            border-radius: 50%;
-            pointer-events: none;
-            opacity: 0.7;
-            animation: neuronMove linear infinite;
-        }
-        
-        @keyframes neuronMove {
-            0% {
-                transform: translate(0, 0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.7;
-            }
-            90% {
-                opacity: 0.7;
-            }
-            100% {
-                transform: translate(var(--tx), var(--ty));
-                opacity: 0;
-            }
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        @keyframes bgColorChange {
-            0% { background-color: #111; }
-            25% { background-color: #1a1a1a; }
-            50% { background-color: #222; }
-            75% { background-color: #1a1a1a; }
-            100% { background-color: #111; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Custom Encoder</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: black;
+      color: #0f0;
+      overflow: hidden;
+      transition: background 3s;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: rgba(20, 20, 20, 0.8);
+    }
+
+    select {
+      background: black;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 5px;
+    }
+
+    .container {
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    textarea {
+      background: #111;
+      color: #0f0;
+      border: 2px solid #0f0;
+      padding: 10px;
+      width: 100%;
+      height: 100px;
+    }
+
+    button {
+      background: #000;
+      color: #0f0;
+      border: 2px solid #0f0;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #0f0;
+      color: #000;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+  </style>
 </head>
 <body>
-    <div class="language-panel">
-        <div class="language-btn" onclick="changeLanguage('fa')">فارسی</div>
-        <div class="language-btn" onclick="changeLanguage('en')">English</div>
-        <div class="language-btn" onclick="changeLanguage('ar')">العربية</div>
-        <div class="language-btn" onclick="changeLanguage('he')">עברית</div>
-        <div class="language-btn" onclick="changeLanguage('ru')">Русский</div>
-    </div>
 
-    <div class="container">
-        <h1 id="title">🔐 ابزار رمزنگاری عصبی</h1>
-        
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab('encode')" id="encodeTab">رمزگذاری</div>
-            <div class="tab" onclick="switchTab('decode')" id="decodeTab">رمزگشایی</div>
-        </div>
-        
-        <div id="encode" class="tab-content active">
-            <h2 id="encodeTitle">متن اصلی را وارد کنید:</h2>
-            <textarea id="inputText" placeholder="متن انگلیسی خود را اینجا وارد کنید..."></textarea>
-            <button onclick="encodeText()" id="encodeBtn">رمزگذاری کن</button>
-            <div class="result">
-                <h3 id="encodeResultTitle">نتیجه رمزگذاری:</h3>
-                <div id="encodedResult"></div>
-            </div>
-        </div>
-        
-        <div id="decode" class="tab-content">
-            <h2 id="decodeTitle">کد رمزگذاری شده را وارد کنید:</h2>
-            <textarea id="encodedText" placeholder="عدد رمزگذاری شده را اینجا وارد کنید..."></textarea>
-            <button onclick="decodeText()" id="decodeBtn">رمزگشایی کن</button>
-            <div class="result">
-                <h3 id="decodeResultTitle">نتیجه رمزگشایی:</h3>
-                <div id="decodedResult"></div>
-            </div>
-        </div>
-    </div>
+<header>
+  <h2>🧬 Custom Encoder</h2>
+  <select id="langSelector">
+    <option value="en">English</option>
+    <option value="fa">فارسی</option>
+    <option value="ar">العربية</option>
+    <option value="he">עברית</option>
+    <option value="ru">Русский</option>
+  </select>
+</header>
 
-    <script>
-        // زبان پیش‌فرض
-        let currentLanguage = 'fa';
-        const translations = {
-            'fa': {
-                'title': '🔐 ابزار رمزنگاری عصبی',
-                'encodeTab': 'رمزگذاری',
-                'decodeTab': 'رمزگشایی',
-                'encodeTitle': 'متن اصلی را وارد کنید:',
-                'decodeTitle': 'کد رمزگذاری شده را وارد کنید:',
-                'encodePlaceholder': 'متن انگلیسی خود را اینجا وارد کنید...',
-                'decodePlaceholder': 'عدد رمزگذاری شده را اینجا وارد کنید...',
-                'encodeBtn': 'رمزگذاری کن',
-                'decodeBtn': 'رمزگشایی کن',
-                'encodeResultTitle': 'نتیجه رمزگذاری:',
-                'decodeResultTitle': 'نتیجه رمزگشایی:',
-                'decodeError': 'خطا در رمزگشایی! لطفاً عدد معتبر وارد کنید.'
-            },
-            'en': {
-                'title': '🔐 Neural Cipher Tool',
-                'encodeTab': 'Encode',
-                'decodeTab': 'Decode',
-                'encodeTitle': 'Enter your text:',
-                'decodeTitle': 'Enter encoded number:',
-                'encodePlaceholder': 'Enter your English text here...',
-                'decodePlaceholder': 'Enter encoded number here...',
-                'encodeBtn': 'Encode',
-                'decodeBtn': 'Decode',
-                'encodeResultTitle': 'Encoded Result:',
-                'decodeResultTitle': 'Decoded Result:',
-                'decodeError': 'Decoding error! Please enter a valid number.'
-            },
-            'ar': {
-                'title': '🔐 أداة التشفير العصبية',
-                'encodeTab': 'تشفير',
-                'decodeTab': 'فك التشفير',
-                'encodeTitle': 'أدخل النص الخاص بك:',
-                'decodeTitle': 'أدخل الرمز المشفر:',
-                'encodePlaceholder': 'أدخل النص الإنجليزي هنا...',
-                'decodePlaceholder': 'أدخل الرقم المشفر هنا...',
-                'encodeBtn': 'تشفير',
-                'decodeBtn': 'فك التشفير',
-                'encodeResultTitle': 'نتيجة التشفير:',
-                'decodeResultTitle': 'نتيجة فك التشفير:',
-                'decodeError': 'خطأ في فك التشفير! يرجى إدخال رقم صحيح.'
-            },
-            'he': {
-                'title': '🔐 כלי הצפנה עצבי',
-                'encodeTab': 'הצפנה',
-                'decodeTab': 'פענוח',
-                'encodeTitle': 'הכנס את הטקסט שלך:',
-                'decodeTitle': 'הכנס את המספר המוצפן:',
-                'encodePlaceholder': 'הכנס טקסט באנגלית כאן...',
-                'decodePlaceholder': 'הכנס את המספר המוצפן כאן...',
-                'encodeBtn': 'הצפנה',
-                'decodeBtn': 'פענוח',
-                'encodeResultTitle': 'תוצאת ההצפנה:',
-                'decodeResultTitle': 'תוצאת הפענוח:',
-                'decodeError': 'שגיאה בפענוח! אנא הכנס מספר חוקי.'
-            },
-            'ru': {
-                'title': '🔐 Нейронный инструмент шифрования',
-                'encodeTab': 'Шифрование',
-                'decodeTab': 'Дешифровка',
-                'encodeTitle': 'Введите текст:',
-                'decodeTitle': 'Введите зашифрованный номер:',
-                'encodePlaceholder': 'Введите английский текст здесь...',
-                'decodePlaceholder': 'Введите зашифрованный номер здесь...',
-                'encodeBtn': 'Зашифровать',
-                'decodeBtn': 'Дешифровать',
-                'encodeResultTitle': 'Результат шифрования:',
-                'decodeResultTitle': 'Результат дешифровки:',
-                'decodeError': 'Ошибка дешифровки! Пожалуйста, введите правильный номер.'
-            }
-        };
+<div class="container">
+  <textarea id="input" placeholder="Enter text..."></textarea>
+  <div>
+    <button onclick="encode()">Encode</button>
+    <button onclick="decode()">Decode</button>
+  </div>
+  <textarea id="output" placeholder="Output..."></textarea>
+</div>
 
-        function changeLanguage(lang) {
-            currentLanguage = lang;
-            document.documentElement.lang = lang;
-            document.documentElement.dir = lang === 'ar' || lang === 'fa' || lang === 'he' ? 'rtl' : 'ltr';
-            
-            for (const [key, value] of Object.entries(translations[lang])) {
-                const element = document.getElementById(key);
-                if (element) {
-                    if (key.endsWith('Placeholder')) {
-                        element.placeholder = value;
-                    } else {
-                        element.textContent = value;
-                    }
-                }
-            }
-        }
+<canvas id="neurons"></canvas>
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
-        }
-        
-        // تابع رمزگذاری بهبود یافته
-        function encodeText() {
-            const text = document.getElementById('inputText').value;
-            let numbers = [];
-            
-            for (let char of text.toUpperCase()) {
-                if (char >= 'A' && char <= 'Z') {
-                    numbers.push(char.charCodeAt(0) - 'A'.charCodeAt(0) + 1 + 8);
-                }
-            }
-            
-            let separated = [];
-            for (let num of numbers) {
-                let digits = String(num).split('');
-                separated.push(digits.join('0') + '0');
-            }
-            
-            let combined = separated.join('');
-            
-            if (/^\d+$/.test(combined)) {
-                let finalNumber = BigInt(combined) + BigInt(888);
-                document.getElementById('encodedResult').textContent = finalNumber.toString();
-            } else {
-                document.getElementById('encodedResult').textContent = combined;
-            }
-        }
-        
-        // تابع رمزگشایی نهایی و تست شده
-        function decodeText() {
-            const encoded = document.getElementById('encodedText').value.trim();
-            
-            try {
-                // مرحله 1: تفریق 888
-                let bigNum = BigInt(encoded) - BigInt(888);
-                let numStr = bigNum.toString();
-                
-                // مرحله 2: پردازش رشته عددی
-                let parts = [];
-                let currentNumber = '';
-                let afterZero = false;
-                
-                for (let i = 0; i < numStr.length; i++) {
-                    if (numStr[i] === '0') {
-                        if (currentNumber !== '') {
-                            parts.push(currentNumber);
-                            currentNumber = '';
-                        }
-                        afterZero = true;
-                    } else {
-                        if (afterZero && currentNumber !== '') {
-                            parts.push(currentNumber);
-                            currentNumber = '';
-                        }
-                        currentNumber += numStr[i];
-                        afterZero = false;
-                    }
-                }
-                
-                if (currentNumber !== '') {
-                    parts.push(currentNumber);
-                }
-                
-                // مرحله 3: تبدیل به حروف
-                let letters = [];
-                for (let part of parts) {
-                    let num = parseInt(part) - 8;
-                    if (num >= 1 && num <= 26) {
-                        letters.push(String.fromCharCode(num + 64));
-                    }
-                }
-                
-                document.getElementById('decodedResult').textContent = letters.join('');
-            } catch (e) {
-                document.getElementById('decodedResult').textContent = translations[currentLanguage]['decodeError'];
-                console.error("Decoding Error:", e);
-            }
-        }
+<script>
+  // زبان‌ها
+  const texts = {
+    en: { input: "Enter text...", encode: "Encode", decode: "Decode", output: "Output..." },
+    fa: { input: "متن را وارد کنید...", encode: "رمزگذاری", decode: "رمزگشایی", output: "خروجی..." },
+    ar: { input: "أدخل النص...", encode: "تشفير", decode: "فك التشفير", output: "الإخراج..." },
+    he: { input: "הזן טקסט...", encode: "קידוד", decode: "פענוח", output: "פלט..." },
+    ru: { input: "Введите текст...", encode: "Кодировать", decode: "Декодировать", output: "Результат..." }
+  };
 
-        // ایجاد نورون‌های متحرک
-        function createNeurons() {
-            const container = document.querySelector('.container');
-            const neuronCount = 30;
-            
-            for (let i = 0; i < neuronCount; i++) {
-                const neuron = document.createElement('div');
-                neuron.className = 'neuron';
-                
-                const startX = Math.random() * container.offsetWidth;
-                const startY = Math.random() * container.offsetHeight;
-                const endX = Math.random() * container.offsetWidth;
-                const endY = Math.random() * container.offsetHeight;
-                
-                neuron.style.left = `${startX}px`;
-                neuron.style.top = `${startY}px`;
-                neuron.style.setProperty('--tx', `${endX - startX}px`);
-                neuron.style.setProperty('--ty', `${endY - startY}px`);
-                neuron.style.animationDuration = `${5 + Math.random() * 10}s`;
-                
-                container.appendChild(neuron);
-                
-                neuron.addEventListener('animationend', () => {
-                    neuron.remove();
-                    createNeurons();
-                });
-            }
-        }
+  document.getElementById('langSelector').addEventListener('change', e => {
+    const lang = e.target.value;
+    const t = texts[lang];
+    document.getElementById('input').placeholder = t.input;
+    document.querySelectorAll('button')[0].innerText = t.encode;
+    document.querySelectorAll('button')[1].innerText = t.decode;
+    document.getElementById('output').placeholder = t.output;
+  });
 
-        // تغییر تدریجی رنگ پس‌زمینه
-        function animateBackground() {
-            const colors = ['#111', '#1a1a1a', '#222', '#1a1a1a'];
-            let currentIndex = 0;
-            
-            setInterval(() => {
-                document.body.style.backgroundColor = colors[currentIndex];
-                currentIndex = (currentIndex + 1) % colors.length;
-            }, 10000);
-        }
+  function encode() {
+    const text = document.getElementById('input').value.toLowerCase();
+    let result = [];
+    for (let char of text) {
+      let code = char.charCodeAt(0);
+      if (code >= 97 && code <= 122) {
+        let num = (code - 96 + 8);
+        result.push(num, 0);
+      }
+    }
+    if (result.length > 0) result.pop(); // حذف صفر اضافی آخر
+    const fullNum = parseInt(result.join('')) + 888;
+    document.getElementById('output').value = fullNum;
+  }
 
-        // راه‌اندازی پس از بارگذاری صفحه
-        window.onload = function() {
-            createNeurons();
-            animateBackground();
-            changeLanguage('fa');
-            
-            // تست خودکار
-            runTests();
-            
-            setInterval(createNeurons, 3000);
-        };
-        
-        // تابع تست خودکار
-        function runTests() {
-            const testCases = [
-                {
-                    input: "HELLO",
-                    expectedEncode: "106001030020000200002918",
-                    expectedDecode: "HELLO"
-                },
-                {
-                    input: "TEST",
-                    expectedEncode: "90109001080009010090110",
-                    expectedDecode: "TEST"
-                },
-                {
-                    input: "ABC",
-                    expectedEncode: "9010010011000",
-                    expectedDecode: "ABC"
-                }
-            ];
-            
-            let allTestsPassed = true;
-            
-            testCases.forEach((testCase, index) => {
-                // تست رمزگذاری
-                document.getElementById('inputText').value = testCase.input;
-                encodeText();
-                const encoded = document.getElementById('encodedResult').textContent;
-                
-                // تست رمزگشایی
-                document.getElementById('encodedText').value = testCase.expectedEncode;
-                decodeText();
-                const decoded = document.getElementById('decodedResult').textContent;
-                
-                if (encoded !== testCase.expectedEncode || decoded !== testCase.expectedDecode) {
-                    console.error(`Test ${index + 1} failed:`);
-                    console.log(`Input: ${testCase.input}`);
-                    console.log(`Encoded: ${encoded} (Expected: ${testCase.expectedEncode})`);
-                    console.log(`Decoded: ${decoded} (Expected: ${testCase.expectedDecode})`);
-                    allTestsPassed = false;
-                }
-            });
-            
-            if (allTestsPassed) {
-                console.log("All tests passed successfully!");
-            } else {
-                console.warn("Some tests failed. Check console for details.");
-            }
-            
-            // پاک کردن فیلدهای تست
-            document.getElementById('inputText').value = "";
-            document.getElementById('encodedText').value = "";
-            document.getElementById('encodedResult').textContent = "";
-            document.getElementById('decodedResult').textContent = "";
-        }
-    </script>
+  function decode() {
+    let num = parseInt(document.getElementById('input').value) - 888;
+    let digits = num.toString().split('0');
+    let text = '';
+    for (let d of digits) {
+      let charCode = parseInt(d) - 8 + 96;
+      if (charCode >= 97 && charCode <= 122) {
+        text += String.fromCharCode(charCode);
+      }
+    }
+    document.getElementById('output').value = text;
+  }
+
+  // انیمیشن نورون‌ها
+  const canvas = document.getElementById('neurons');
+  const ctx = canvas.getContext('2d');
+  let w = canvas.width = window.innerWidth;
+  let h = canvas.height = window.innerHeight;
+  const particles = [];
+
+  for (let i = 0; i < 150; i++) {
+    particles.push({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: Math.random() * 2,
+      dx: (Math.random() - 0.5) * 0.5,
+      dy: (Math.random() - 0.5) * 0.5
+    });
+  }
+
+  function draw() {
+    ctx.fillStyle = "rgba(0,0,0,0.1)";
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = "#0f0";
+    particles.forEach(p => {
+      p.x += p.dx;
+      p.y += p.dy;
+
+      if (p.x < 0 || p.x > w) p.dx *= -1;
+      if (p.y < 0 || p.y > h) p.dy *= -1;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  // تغییر رنگ تم دارک بین نقره‌ای، خاکستری، مشکی
+  const darkThemes = ['#000', '#222', '#333', '#444', '#555', '#666'];
+  setInterval(() => {
+    const color = darkThemes[Math.floor(Math.random() * darkThemes.length)];
+    document.body.style.background = color;
+  }, 5000);
+
+  window.addEventListener('resize', () => {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  });
+</script>
+
 </body>
 </html>
