@@ -358,42 +358,54 @@
         }
         
         function decodeText() {
-            const encoded = document.getElementById('encodedText').value.trim();
-            
-            try {
-                let number = BigInt(encoded) - BigInt(888);
-                let numStr = number.toString();
-                
-                let parts = [];
-                let temp = '';
-                
-                for (let i = 0; i < numStr.length; i++) {
-                    if (numStr[i] === '0') {
-                        if (temp !== '') {
-                            parts.push(temp);
-                            temp = '';
-                        }
-                    } else {
-                        temp += numStr[i];
-                    }
+    const encoded = document.getElementById('encodedText').value.trim();
+    
+    try {
+        // مرحله 1: تفریق 888
+        let bigNum = BigInt(encoded) - BigInt(888);
+        let numStr = bigNum.toString();
+        
+        // مرحله 2: پردازش رشته عددی
+        let parts = [];
+        let currentPart = [];
+        let zeroCount = 0;
+
+        for (let i = 0; i < numStr.length; i++) {
+            if (numStr[i] === '0') {
+                zeroCount++;
+                if (currentPart.length > 0 && zeroCount === 1) {
+                    parts.push(currentPart.join(''));
+                    currentPart = [];
                 }
-                if (temp !== '') parts.push(temp);
-                
-                let letters = [];
-                for (let numStr of parts) {
-                    let num = parseInt(numStr) - 8;
-                    if (num >= 1 && num <= 26) {
-                        letters.push(String.fromCharCode(num + 64));
-                    }
+            } else {
+                if (zeroCount > 0 && currentPart.length > 0) {
+                    parts.push(currentPart.join(''));
+                    currentPart = [];
                 }
-                
-                document.getElementById('decodedResult').textContent = letters.join('');
-            } catch (e) {
-                document.getElementById('decodedResult').textContent = translations[currentLanguage]['decodeError'];
-                console.error("Error:", e);
+                currentPart.push(numStr[i]);
+                zeroCount = 0;
             }
         }
+        
+        if (currentPart.length > 0) {
+            parts.push(currentPart.join(''));
+        }
 
+        // مرحله 3: تبدیل به حروف
+        let letters = [];
+        for (let part of parts) {
+            let num = parseInt(part) - 8;
+            if (num >= 1 && num <= 26) {
+                letters.push(String.fromCharCode(num + 64));
+            }
+        }
+        
+        document.getElementById('decodedResult').textContent = letters.join('');
+    } catch (e) {
+        document.getElementById('decodedResult').textContent = translations[currentLanguage]['decodeError'];
+        console.error("Decoding Error:", e);
+    }
+        }
         // ایجاد نورون‌های متحرک
         function createNeurons() {
             const container = document.querySelector('.container');
