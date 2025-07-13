@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Cipher - ابزار رمزنگاری پیشرفته</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --bg-color: #121212;
+            --panel-color: #1e1e1e;
+            --text-color: #e0e0e0;
+            --border-color: #333;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            transition: background-color 5s;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--panel-color);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: rgba(0, 0, 0, 0.2);
+            color: var(--text-color);
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            margin: 10px 5px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .result {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            border: 1px solid var(--border-color);
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.2);
+            margin-left: 5px;
+            border-radius: 6px 6px 0 0;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--primary-color);
+            border-color: var(--border-color);
+            border-bottom-color: var(--panel-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .language-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .language-btn {
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        
+        .language-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="language-panel">
+            <div class="language-btn" onclick="changeLanguage('fa')">فارسی</div>
+            <div class="language-btn" onclick="changeLanguage('en')">English</div>
+            <div class="language-btn" onclick="changeLanguage('ar')">العربية</div>
+            <div class="language-btn" onclick="changeLanguage('he')">עברית</div>
+            <div class="language-btn" onclick="changeLanguage('ru')">Русский</div>
+        </div>
+
+        <h1 id="title">🔐 ابزار رمزنگاری پیشرفته</h1>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('encode')" id="encodeTab">رمزگذاری</div>
+            <div class="tab" onclick="switchTab('decode')" id="decodeTab">رمزگشایی</div>
+        </div>
+        
+        <div id="encode" class="tab-content active">
+            <h2 id="encodeTitle">متن اصلی را وارد کنید:</h2>
+            <textarea id="inputText" placeholder="متن انگلیسی خود را اینجا وارد کنید..."></textarea>
+            <button onclick="encodeText()" id="encodeBtn">رمزگذاری کن</button>
+            <div class="result">
+                <h3 id="encodeResultTitle">نتیجه رمزگذاری:</h3>
+                <div id="encodedResult"></div>
+            </div>
+        </div>
+        
+        <div id="decode" class="tab-content">
+            <h2 id="decodeTitle">کد رمزگذاری شده را وارد کنید:</h2>
+            <textarea id="encodedText" placeholder="عدد رمزگذاری شده را اینجا وارد کنید..."></textarea>
+            <button onclick="decodeText()" id="decodeBtn">رمزگشایی کن</button>
+            <div class="result">
+                <h3 id="decodeResultTitle">نتیجه رمزگشایی:</h3>
+                <div id="decodedResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // زبان پیش‌فرض
+        let currentLanguage = 'fa';
+        const translations = {
+            'fa': {
+                'title': '🔐 ابزار رمزنگاری پیشرفته',
+                'encodeTab': 'رمزگذاری',
+                'decodeTab': 'رمزگشایی',
+                'encodeTitle': 'متن اصلی را وارد کنید:',
+                'decodeTitle': 'کد رمزگذاری شده را وارد کنید:',
+                'encodePlaceholder': 'متن انگلیسی خود را اینجا وارد کنید...',
+                'decodePlaceholder': 'عدد رمزگذاری شده را اینجا وارد کنید...',
+                'encodeBtn': 'رمزگذاری کن',
+                'decodeBtn': 'رمزگشایی کن',
+                'encodeResultTitle': 'نتیجه رمزگذاری:',
+                'decodeResultTitle': 'نتیجه رمزگشایی:',
+                'decodeError': 'خطا در رمزگشایی! لطفاً عدد معتبر وارد کنید.'
+            },
+            'en': {
+                'title': '🔐 Advanced Cipher Tool',
+                'encodeTab': 'Encode',
+                'decodeTab': 'Decode',
+                'encodeTitle': 'Enter your text:',
+                'decodeTitle': 'Enter encoded number:',
+                'encodePlaceholder': 'Enter your English text here...',
+                'decodePlaceholder': 'Enter encoded number here...',
+                'encodeBtn': 'Encode',
+                'decodeBtn': 'Decode',
+                'encodeResultTitle': 'Encoded Result:',
+                'decodeResultTitle': 'Decoded Result:',
+                'decodeError': 'Decoding error! Please enter a valid number.'
+            },
+            'ar': {
+                'title': '🔐 أداة التشفير المتقدمة',
+                'encodeTab': 'تشفير',
+                'decodeTab': 'فك التشفير',
+                'encodeTitle': 'أدخل النص الخاص بك:',
+                'decodeTitle': 'أدخل الرمز المشفر:',
+                'encodePlaceholder': 'أدخل النص الإنجليزي هنا...',
+                'decodePlaceholder': 'أدخل الرقم المشفر هنا...',
+                'encodeBtn': 'تشفير',
+                'decodeBtn': 'فك التشفير',
+                'encodeResultTitle': 'نتيجة التشفير:',
+                'decodeResultTitle': 'نتيجة فك التشفير:',
+                'decodeError': 'خطأ في فك التشفير! يرجى إدخال رقم صحيح.'
+            },
+            'he': {
+                'title': '🔐 כלי הצפנה מתקדם',
+                'encodeTab': 'הצפנה',
+                'decodeTab': 'פענוח',
+                'encodeTitle': 'הכנס את הטקסט שלך:',
+                'decodeTitle': 'הכנס את המספר המוצפן:',
+                'encodePlaceholder': 'הכנס טקסט באנגלית כאן...',
+                'decodePlaceholder': 'הכנס את המספר המוצפן כאן...',
+                'encodeBtn': 'הצפנה',
+                'decodeBtn': 'פענוח',
+                'encodeResultTitle': 'תוצאת ההצפנה:',
+                'decodeResultTitle': 'תוצאת הפענוח:',
+                'decodeError': 'שגיאה בפענוח! אנא הכנס מספר חוקי.'
+            },
+            'ru': {
+                'title': '🔐 Продвинутый инструмент шифрования',
+                'encodeTab': 'Шифрование',
+                'decodeTab': 'Дешифровка',
+                'encodeTitle': 'Введите текст:',
+                'decodeTitle': 'Введите зашифрованный номер:',
+                'encodePlaceholder': 'Введите английский текст здесь...',
+                'decodePlaceholder': 'Введите зашифрованный номер здесь...',
+                'encodeBtn': 'Зашифровать',
+                'decodeBtn': 'Дешифровать',
+                'encodeResultTitle': 'Результат шифрования:',
+                'decodeResultTitle': 'Результат дешифровки:',
+                'decodeError': 'Ошибка дешифровки! Пожалуйста, введите правильный номер.'
+            }
+        };
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' || lang === 'fa' || lang === 'he' ? 'rtl' : 'ltr';
+            
+            for (const [key, value] of Object.entries(translations[lang])) {
+                const element = document.getElementById(key);
+                if (element) {
+                    if (key.endsWith('Placeholder')) {
+                        element.placeholder = value;
+                    } else {
+                        element.textContent = value;
+                    }
+                }
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        function encodeText() {
+            const text = document.getElementById('inputText').value;
+            let numbers = [];
+            
+            for (let char of text.toUpperCase()) {
+                if (char >= 'A' && char <= 'Z') {
+                    numbers.push(char.charCodeAt(0) - 'A'.charCodeAt(0) + 1 + 8);
+                }
+            }
+            
+            let separated = [];
+            for (let num of numbers) {
+                let digits = String(num).split('');
+                separated.push(digits.join('0') + '0');
+            }
+            
+            let combined = separated.join('');
+            
+            if (/^\d+$/.test(combined)) {
+                let finalNumber = BigInt(combined) + BigInt(888);
+                document.getElementById('encodedResult').textContent = finalNumber.toString();
+            } else {
+                document.getElementById('encodedResult').textContent = combined;
+            }
+        }
+        
+        function decodeText() {
+            const encoded = document.getElementById('encodedText').value.trim();
+            
+            if (!encoded) {
+                document.getElementById('decodedResult').textContent = translations[currentLanguage]['decodeError'];
+                return;
+            }
+            
+            try {
+                // مرحله 1: تفریق 888
+                let bigNum = BigInt(encoded) - BigInt(888);
+                let numStr = bigNum.toString();
+                
+                // مرحله 2: پردازش رشته عددی
+                let parts = numStr.split('0').filter(part => part !== '');
+                
+                // مرحله 3: تبدیل به حروف
+                let letters = [];
+                for (let part of parts) {
+                    let num = parseInt(part) - 8;
+                    if (num >= 1 && num <= 26) {
+                        letters.push(String.fromCharCode(num + 64));
+                    }
+                }
+                
+                document.getElementById('decodedResult').textContent = letters.join('');
+            } catch (e) {
+                document.getElementById('decodedResult').textContent = translations[currentLanguage]['decodeError'];
+                console.error("Decoding Error:", e);
+            }
+        }
+
+        // تغییر خودکار رنگ پس‌زمینه
+        function animateBackground() {
+            const colors = ['#121212', '#1a1a1a', '#222', '#1a1a1a'];
+            let currentIndex = 0;
+            
+            setInterval(() => {
+                document.body.style.backgroundColor = colors[currentIndex];
+                currentIndex = (currentIndex + 1) % colors.length;
+            }, 10000);
+        }
+
+        // راه‌اندازی پس از بارگذاری صفحه
+        window.onload = function() {
+            animateBackground();
+            changeLanguage('fa');
+            
+            // اجرای تست‌های نمونه
+            runTests();
+        };
+        
+        // تابع تست خودکار
+        function runTests() {
+            const testCases = [
+                {
+                    input: "HELLO",
+                    expectedEncode: "106001030020000200002918",
+                    expectedDecode: "HELLO"
+                },
+                {
+                    input: "TEST",
+                    expectedEncode: "90109001080009010090110",
+                    expectedDecode: "TEST"
+                },
+                {
+                    input: "ABC",
+                    expectedEncode: "9010010011000",
+                    expectedDecode: "ABC"
+                }
+            ];
+            
+            console.log("Running tests...");
+            
+            testCases.forEach((testCase, index) => {
+                // تست رمزگذاری
+                document.getElementById('inputText').value = testCase.input;
+                encodeText();
+                const encoded = document.getElementById('encodedResult').textContent;
+                
+                // تست رمزگشایی
+                document.getElementById('encodedText').value = encoded;
+                decodeText();
+                const decoded = document.getElementById('decodedResult').textContent;
+                
+                if (encoded !== testCase.expectedEncode || decoded !== testCase.input) {
+                    console.error(`Test ${index + 1} failed:`);
+                    console.log(`Input: ${testCase.input}`);
+                    console.log(`Encoded: ${encoded} (Expected: ${testCase.expectedEncode})`);
+                    console.log(`Decoded: ${decoded} (Expected: ${testCase.input})`);
+                } else {
+                    console.log(`Test ${index + 1} passed: ${testCase.input} ↔ ${encoded}`);
+                }
+            });
+            
+            // پاک کردن فیلدهای تست
+            document.getElementById('inputText').value = "";
+            document.getElementById('encodedText').value = "";
+            document.getElementById('encodedResult').textContent = "";
+            document.getElementById('decodedResult').textContent = "";
+        }
+    </script>
+</body>
+  </html>
