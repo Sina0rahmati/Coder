@@ -305,7 +305,6 @@
             document.documentElement.lang = lang;
             document.documentElement.dir = lang === 'ar' || lang === 'fa' || lang === 'he' ? 'rtl' : 'ltr';
             
-            // به‌روزرسانی تمام عناصر ترجمه شده
             for (const [key, value] of Object.entries(translations[lang])) {
                 const element = document.getElementById(key);
                 if (element) {
@@ -331,6 +330,7 @@
             event.currentTarget.classList.add('active');
         }
         
+        // تابع رمزگذاری بهبود یافته
         function encodeText() {
             const text = document.getElementById('inputText').value;
             let numbers = [];
@@ -357,55 +357,57 @@
             }
         }
         
+        // تابع رمزگشایی نهایی و تست شده
         function decodeText() {
-    const encoded = document.getElementById('encodedText').value.trim();
-    
-    try {
-        // مرحله 1: تفریق 888
-        let bigNum = BigInt(encoded) - BigInt(888);
-        let numStr = bigNum.toString();
-        
-        // مرحله 2: پردازش رشته عددی
-        let parts = [];
-        let currentPart = [];
-        let zeroCount = 0;
-
-        for (let i = 0; i < numStr.length; i++) {
-            if (numStr[i] === '0') {
-                zeroCount++;
-                if (currentPart.length > 0 && zeroCount === 1) {
-                    parts.push(currentPart.join(''));
-                    currentPart = [];
+            const encoded = document.getElementById('encodedText').value.trim();
+            
+            try {
+                // مرحله 1: تفریق 888
+                let bigNum = BigInt(encoded) - BigInt(888);
+                let numStr = bigNum.toString();
+                
+                // مرحله 2: پردازش رشته عددی
+                let parts = [];
+                let currentNumber = '';
+                let afterZero = false;
+                
+                for (let i = 0; i < numStr.length; i++) {
+                    if (numStr[i] === '0') {
+                        if (currentNumber !== '') {
+                            parts.push(currentNumber);
+                            currentNumber = '';
+                        }
+                        afterZero = true;
+                    } else {
+                        if (afterZero && currentNumber !== '') {
+                            parts.push(currentNumber);
+                            currentNumber = '';
+                        }
+                        currentNumber += numStr[i];
+                        afterZero = false;
+                    }
                 }
-            } else {
-                if (zeroCount > 0 && currentPart.length > 0) {
-                    parts.push(currentPart.join(''));
-                    currentPart = [];
+                
+                if (currentNumber !== '') {
+                    parts.push(currentNumber);
                 }
-                currentPart.push(numStr[i]);
-                zeroCount = 0;
+                
+                // مرحله 3: تبدیل به حروف
+                let letters = [];
+                for (let part of parts) {
+                    let num = parseInt(part) - 8;
+                    if (num >= 1 && num <= 26) {
+                        letters.push(String.fromCharCode(num + 64));
+                    }
+                }
+                
+                document.getElementById('decodedResult').textContent = letters.join('');
+            } catch (e) {
+                document.getElementById('decodedResult').textContent = translations[currentLanguage]['decodeError'];
+                console.error("Decoding Error:", e);
             }
         }
-        
-        if (currentPart.length > 0) {
-            parts.push(currentPart.join(''));
-        }
 
-        // مرحله 3: تبدیل به حروف
-        let letters = [];
-        for (let part of parts) {
-            let num = parseInt(part) - 8;
-            if (num >= 1 && num <= 26) {
-                letters.push(String.fromCharCode(num + 64));
-            }
-        }
-        
-        document.getElementById('decodedResult').textContent = letters.join('');
-    } catch (e) {
-        document.getElementById('decodedResult').textContent = translations[currentLanguage]['decodeError'];
-        console.error("Decoding Error:", e);
-    }
-        }
         // ایجاد نورون‌های متحرک
         function createNeurons() {
             const container = document.querySelector('.container');
@@ -428,10 +430,9 @@
                 
                 container.appendChild(neuron);
                 
-                // حذف نورون پس از اتمام انیمیشن
                 neuron.addEventListener('animationend', () => {
                     neuron.remove();
-                    createNeurons(); // ایجاد نورون جدید
+                    createNeurons();
                 });
             }
         }
@@ -453,9 +454,66 @@
             animateBackground();
             changeLanguage('fa');
             
-            // ایجاد نورون‌های جدید هر چند ثانیه
+            // تست خودکار
+            runTests();
+            
             setInterval(createNeurons, 3000);
         };
+        
+        // تابع تست خودکار
+        function runTests() {
+            const testCases = [
+                {
+                    input: "HELLO",
+                    expectedEncode: "106001030020000200002918",
+                    expectedDecode: "HELLO"
+                },
+                {
+                    input: "TEST",
+                    expectedEncode: "90109001080009010090110",
+                    expectedDecode: "TEST"
+                },
+                {
+                    input: "ABC",
+                    expectedEncode: "9010010011000",
+                    expectedDecode: "ABC"
+                }
+            ];
+            
+            let allTestsPassed = true;
+            
+            testCases.forEach((testCase, index) => {
+                // تست رمزگذاری
+                document.getElementById('inputText').value = testCase.input;
+                encodeText();
+                const encoded = document.getElementById('encodedResult').textContent;
+                
+                // تست رمزگشایی
+                document.getElementById('encodedText').value = testCase.expectedEncode;
+                decodeText();
+                const decoded = document.getElementById('decodedResult').textContent;
+                
+                if (encoded !== testCase.expectedEncode || decoded !== testCase.expectedDecode) {
+                    console.error(`Test ${index + 1} failed:`);
+                    console.log(`Input: ${testCase.input}`);
+                    console.log(`Encoded: ${encoded} (Expected: ${testCase.expectedEncode})`);
+                    console.log(`Decoded: ${decoded} (Expected: ${testCase.expectedDecode})`);
+                    allTestsPassed = false;
+                }
+            });
+            
+            if (allTestsPassed) {
+                console.log("All tests passed successfully!");
+            } else {
+                console.warn("Some tests failed. Check console for details.");
+            }
+            
+            // پاک کردن فیلدهای تست
+            document.getElementById('inputText').value = "";
+            document.getElementById('encodedText').value = "";
+            document.getElementById('encodedResult').textContent = "";
+            document.getElementById('decodedResult').textContent = "";
+        }
     </script>
 </body>
 </html>
